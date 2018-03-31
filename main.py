@@ -1,16 +1,16 @@
 import random
 import copy
 
-W = 200
-H = 200
+W = 400
+H = 400
 
-KAPPA = 0.8
-BETA = 1.7
-ALPHA = 1.9
-THETA = 0.25
-RHO = 2.0
-MU = 0.0048
-GAMMA = 0.0006
+KAPPA = 0.6
+BETA = 0.65
+ALPHA = 0.7
+THETA = 0.7
+RHO = 1.1
+MU = 0.5
+GAMMA = 0.5
 
 SIGMA = 0.000
 
@@ -48,17 +48,17 @@ def initialiser():
             # 0 1 1
             if ligne % 2 == 0:
                 voisins[colonne, ligne] = [(colonne - 1, ligne - 1),
-                                           (colonne, ligne - 1),
                                            (colonne - 1, ligne),
-                                           (colonne + 1, ligne),
                                            (colonne - 1, ligne + 1),
-                                           (colonne, ligne + 1)]
-            else:
-                voisins[colonne, ligne] = [(colonne, ligne - 1),
-                                           (colonne + 1, ligne - 1),
-                                           (colonne - 1, ligne),
-                                           (colonne + 1, ligne),
+                                           (colonne, ligne - 1),
                                            (colonne, ligne + 1),
+                                           (colonne + 1, ligne)]
+            else:
+                voisins[colonne, ligne] = [(colonne - 1, ligne),
+                                           (colonne, ligne - 1),
+                                           (colonne, ligne + 1),
+                                           (colonne + 1, ligne - 1),
+                                           (colonne + 1, ligne),
                                            (colonne + 1, ligne + 1)]
 
             voisins[colonne, ligne] = list(filter(lambda x: (x[0] != W and
@@ -146,9 +146,9 @@ def attachement(cel_up, voisins_cel):
         cel_up[0] = True
         cristal.add((colonne, ligne))
         frontiere_up.remove((colonne, ligne))
-        for ligne1, colonne1 in voisins[colonne, ligne]:
-            if not (colonne1, ligne1) in cristal:
-                frontiere_up.add((ligne1, colonne1))
+        for colonne1, ligne1 in voisins[colonne, ligne]:
+            if (colonne1, ligne1) not in cristal:
+                frontiere_up.add((colonne1, ligne1))
 
 
 def fonte(cel_up):
@@ -181,7 +181,8 @@ if __name__ == "__main__":
     initialiser()
     flocon = Image.new('RGB', (W, H))
     px = flocon.load()
-    frontiere = set(x for x in voisins[H / 2, W / 2])
+    frontiere = set(x for x in voisins[W / 2, H / 2])
+
     for i in range(3300):
         updated_tableau = copy.deepcopy(tableau_cellules)
         frontiere_up = frontiere.copy()
@@ -191,7 +192,7 @@ if __name__ == "__main__":
                 cel_up = updated_tableau[colonne][ligne]
                 voisins_cel = voisins[colonne, ligne]
                 diffusion(cel_up, voisins_cel)
-        
+
         for (colonne, ligne) in frontiere:
             cel_up = updated_tableau[colonne][ligne]
             voisins_cel = voisins[colonne, ligne]
@@ -200,9 +201,12 @@ if __name__ == "__main__":
             if not cel_up[0]:
                 fonte(cel_up)
                 bruit(cel_up)
+
         frontiere = frontiere_up.copy()
         tableau_cellules = copy.deepcopy(updated_tableau)
-        if i % 100 == 0:
-            for (colonne, ligne) in cristal:
-                px[colonne, ligne] = (0, 0, 255)
+        
+        for (colonne, ligne) in frontiere:
+            px[colonne, ligne] = (i % 256, (i * i) % 256, (255 - i) % 256)
+
+        if i % 25 == 0:
             flocon.show()
