@@ -1,0 +1,17 @@
+16/03/2018
+Lecture du sujet et sélection de flocon de neige
+Installation de pillow
+Quelques test pour comprendre pillow, jeux de couleurs, grille
+
+18/03/2018
+Première approche de la structure de donnée et mise en place de la structure de base ainsi que de la première "loop" pour effectuer les changements
+
+23/03/2018
+Code propre et fonctionnel ajout de nombreuses fonction
+
+26/03/2018:
+Erreurs à corriger / Deepcopy à faire pour tout mettre à jour d'un seul coup
+
+A venir :
+Commentaires
+Affichage graphique
