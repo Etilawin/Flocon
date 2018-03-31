@@ -1,6 +1,9 @@
 import random
 import copy
 import os
+from pycallgraph import PyCallGraph
+from pycallgraph.output import GraphvizOutput
+import multiprocessing
 
 W = 400
 H = 400
@@ -27,8 +30,9 @@ def initialiser():
     Retourne : None
     C.U : Aucune
     """
+    append = tableau_cellules.append
     for colonne in range(W):
-        tableau_cellules.append([])
+        append([])
         for ligne in range(H):
             # Création de la cellule
             if ligne == H / 2 and colonne == W / 2:
@@ -147,9 +151,10 @@ def attachement(cel_up, voisins_cel):
         cel_up[0] = True
         cristal.add((colonne, ligne))
         frontiere_up.remove((colonne, ligne))
+        add = frontiere_up.add
         for colonne1, ligne1 in voisins[colonne, ligne]:
             if (colonne1, ligne1) not in cristal:
-                frontiere_up.add((colonne1, ligne1))
+                add((colonne1, ligne1))
 
 
 def fonte(cel_up):
@@ -186,7 +191,7 @@ def create_folder():
     return base + str(i)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from PIL import Image
 
     initialiser()
@@ -198,15 +203,31 @@ if __name__ == "__main__":
 
     chemin = create_folder()
 
+    dc = copy.deepcopy # Augmente la vitesse d'execution (https://wiki.python.org/moin/PythonSpeed/PerformanceTips)
+    join = os.path.join
+
     for i in range(3300):
-        updated_tableau = copy.deepcopy(tableau_cellules)
+        updated_tableau = dc(tableau_cellules)
         frontiere_up = frontiere.copy()
-        for colonne in range(W):
-            for ligne in range(H):
+        # for colonne in range(W):
+        #     for ligne in range(H):
+        #         cel = tableau_cellules[colonne][ligne]
+        #         cel_up = updated_tableau[colonne][ligne]
+        #         voisins_cel = voisins[colonne, ligne]
+        #         if not cel[0]:
+        #             diffusion(cel, cel_up, voisins_cel)
+        l_f = len(frontiere)/3
+        if l_f < W / 2:
+            a1, b1, a2, b2 = int(W / 2 - l_f), int(W / 2 + l_f), int(H / 2 - l_f), int(H / 2 + l_f)
+        elif l_f > W / 2:
+            a1, b1, a2, b2 = 0, W, 0, H
+        
+        for colonne in range(a1, b1):
+            for ligne in range(a2, b2):
                 cel = tableau_cellules[colonne][ligne]
-                cel_up = updated_tableau[colonne][ligne]
-                voisins_cel = voisins[colonne, ligne]
                 if not cel[0]:
+                    cel_up = updated_tableau[colonne][ligne]
+                    voisins_cel = voisins[colonne, ligne]
                     diffusion(cel, cel_up, voisins_cel)
 
         for (colonne, ligne) in frontiere:
@@ -220,7 +241,7 @@ if __name__ == "__main__":
             px[colonne, ligne] = (i % 256, (i * i) % 256, (255 - i) % 256)
 
         frontiere = frontiere_up.copy()
-        tableau_cellules = copy.deepcopy(updated_tableau)
+        tableau_cellules = dc(updated_tableau)
 
         if i % 25 == 0:
-            flocon.save(os.path.join(chemin, "image" + str(i//25) + ".png"))
+            flocon.save(join(chemin, "image" + str(i//25) + ".png"))
