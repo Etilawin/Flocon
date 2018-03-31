@@ -24,7 +24,7 @@ def initialiser():
     """
     Fonction qui initialise le script en générant tableau_cellules et voisins au fur et à mesure
     Paramètre : Aucun
-    Retourne : Rien
+    Retourne : None
     C.U : Aucune
     """
     for colonne in range(W):
@@ -223,4 +223,4 @@ if __name__ == "__main__":
         tableau_cellules = copy.deepcopy(updated_tableau)
 
         if i % 25 == 0:
-            flocon.save(os.path.join(chemin, "image" + str(i//25) + ".jpg"))
+            flocon.save(os.path.join(chemin, "image" + str(i//25) + ".png"))
