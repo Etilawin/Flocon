@@ -1,9 +1,9 @@
 import random
 import copy
 import os
-from pycallgraph import PyCallGraph
-from pycallgraph.output import GraphvizOutput
-import multiprocessing
+# from pycallgraph import PyCallGraph
+# from pycallgraph.output import GraphvizOutput
+from graphisme import *
 
 W = 400
 H = 400
@@ -16,7 +16,7 @@ RHO = 1.1
 MU = 0.5
 GAMMA = 0.5
 
-SIGMA = 0.000
+SIGMA = 0.005
 
 tableau_cellules = []
 voisins = {}
@@ -33,6 +33,7 @@ def initialiser():
     append = tableau_cellules.append
     for colonne in range(W):
         append([])
+        add_ligne = tableau_cellules[colonne].append
         for ligne in range(H):
             # Création de la cellule
             if ligne == H / 2 and colonne == W / 2:
@@ -40,7 +41,7 @@ def initialiser():
                 cristal.add((colonne, ligne))
             else:
                 cellule = [False, 0, 0, RHO]
-            tableau_cellules[colonne].append(cellule)
+            add_ligne(cellule)
             # Coordonées des voisins
             # Lignes...
             # ...Pairs :
@@ -206,24 +207,17 @@ if __name__ == '__main__':
     dc = copy.deepcopy # Augmente la vitesse d'execution (https://wiki.python.org/moin/PythonSpeed/PerformanceTips)
     join = os.path.join
 
+    all_possibilities = []
+    add_to_all = all_possibilities.append
+    for colonne in range(W):
+        for ligne in range(H):
+            add_to_all((colonne, ligne))
+
     for i in range(3300):
         updated_tableau = dc(tableau_cellules)
         frontiere_up = frontiere.copy()
-        # for colonne in range(W):
-        #     for ligne in range(H):
-        #         cel = tableau_cellules[colonne][ligne]
-        #         cel_up = updated_tableau[colonne][ligne]
-        #         voisins_cel = voisins[colonne, ligne]
-        #         if not cel[0]:
-        #             diffusion(cel, cel_up, voisins_cel)
-        l_f = len(frontiere)/3
-        if l_f < W / 2:
-            a1, b1, a2, b2 = int(W / 2 - l_f), int(W / 2 + l_f), int(H / 2 - l_f), int(H / 2 + l_f)
-        elif l_f > W / 2:
-            a1, b1, a2, b2 = 0, W, 0, H
-        
-        for colonne in range(a1, b1):
-            for ligne in range(a2, b2):
+
+        for (colonne, ligne) in all_possibilities: # Évite de recréer à chaque fois un range
                 cel = tableau_cellules[colonne][ligne]
                 if not cel[0]:
                     cel_up = updated_tableau[colonne][ligne]
