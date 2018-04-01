@@ -1,6 +1,7 @@
 import random
 import copy
 import os
+import shutil
 # from pycallgraph import PyCallGraph
 # from pycallgraph.output import GraphvizOutput
 from math import pi, sin
@@ -11,7 +12,7 @@ H = 2000
 
 T_HEXAGONES = 5
 H_TABLEAU = int(H / (T_HEXAGONES * (1 + sin(pi / 3)))) + 2
-W_TABLEAU = int(W / (T_HEXAGONES + 1.5) + 2)
+W_TABLEAU = int(W / (2 * T_HEXAGONES)) + 2
 
 H_TABLEAU = H_TABLEAU if H_TABLEAU % 2 == 0 else H_TABLEAU + 1
 W_TABLEAU = W_TABLEAU if W_TABLEAU % 2 == 0 else W_TABLEAU + 1
@@ -216,11 +217,11 @@ def generer_unitee_hexagonal(width, height):
     # Moitié de la taille de l'hexagone
     l = sin(pi / 3)
     colonne = 0
-    for x in range(0, int(width / l) + 1):
+    for x in range(-1, int(width / l) + 1):
         ligne = 0 if (x % 2 == 1) else 1
-        for y in range(0, height, 3):
+        for y in range(-1, height, 3):
 
-            y_ = y if (x % 2 == 0) else y + 1.5
+            y_ = y if (x % 2 == 1) else y + 1.5
 
             color = (255,255,255)
             if (colonne,ligne) in cristal:
@@ -256,44 +257,50 @@ if __name__ == '__main__':
     frontiere = set(x for x in voisins[W_TABLEAU / 2, H_TABLEAU / 2])
 
     chemin = create_folder()
+    try:
+        # Augmente la vitesse d'execution (https://wiki.python.org/moin/PythonSpeed/PerformanceTips)
+        dc = copy.deepcopy
+        join = os.path.join
 
-    # Augmente la vitesse d'execution (https://wiki.python.org/moin/PythonSpeed/PerformanceTips)
-    dc = copy.deepcopy
-    join = os.path.join
+        all_possibilities = []
+        add_to_all = all_possibilities.append
+        for colonne in range(W_TABLEAU):
+            for ligne in range(H_TABLEAU):
+                add_to_all((colonne, ligne))
 
-    all_possibilities = []
-    add_to_all = all_possibilities.append
-    for colonne in range(W_TABLEAU):
-        for ligne in range(H_TABLEAU):
-            add_to_all((colonne, ligne))
+        for i in range(3300):
+            updated_tableau = dc(tableau_cellules)
+            frontiere_up = frontiere.copy()
 
-    for i in range(3300):
-        updated_tableau = dc(tableau_cellules)
-        frontiere_up = frontiere.copy()
+            for (colonne, ligne) in all_possibilities:  # Évite de recréer à chaque fois un range
+                cel = tableau_cellules[colonne][ligne]
+                if not cel[0]:
+                    cel_up = updated_tableau[colonne][ligne]
+                    voisins_cel = voisins[colonne, ligne]
+                    diffusion(cel, cel_up, voisins_cel)
 
-        for (colonne, ligne) in all_possibilities:  # Évite de recréer à chaque fois un range
-            cel = tableau_cellules[colonne][ligne]
-            if not cel[0]:
+            for (colonne, ligne) in frontiere:
                 cel_up = updated_tableau[colonne][ligne]
                 voisins_cel = voisins[colonne, ligne]
-                diffusion(cel, cel_up, voisins_cel)
+                gel(cel_up)
+                attachement(cel_up, voisins_cel)
+                if not cel_up[0]:
+                    fonte(cel_up)
+                    bruit(cel_up)
+                # px[colonne, ligne] = (i % 256, (i * i) % 256, (255 - i) % 256)
 
-        for (colonne, ligne) in frontiere:
-            cel_up = updated_tableau[colonne][ligne]
-            voisins_cel = voisins[colonne, ligne]
-            gel(cel_up)
-            attachement(cel_up, voisins_cel)
-            if not cel_up[0]:
-                fonte(cel_up)
-                bruit(cel_up)
-            # px[colonne, ligne] = (i % 256, (i * i) % 256, (255 - i) % 256)
-
-        frontiere = frontiere_up.copy()
-        tableau_cellules = dc(updated_tableau)
-
-        if i % 25 == 0:
-            for infos in generer_hexagones(W, H, taille=T_HEXAGONES):
-                shape = infos[0]
-                color = infos[-1]
-                ImageDraw.Draw(flocon).polygon(shape, fill=color)
-            flocon.save(join(chemin, "image" + str(i // 25) + ".png"))
+            frontiere = frontiere_up.copy()
+            tableau_cellules = dc(updated_tableau)
+            print(cristal)
+            if i % 4 == 0:
+                print("stop")
+                for infos in generer_hexagones(W, H, taille=T_HEXAGONES):
+                    shape = infos[0]
+                    color = infos[-1]
+                    ImageDraw.Draw(flocon).polygon(shape, fill=color)
+                flocon.save(join(chemin, "image" + str(i // 4) + ".png"))
+    except KeyboardInterrupt:
+        rep = input("Voulez vous effacer le dossier en cours ? ")
+        if rep.lower() in ('o', 'oui'):
+            shutil.rmtree(chemin, ignore_errors=True)
+        raise KeyboardInterrupt
