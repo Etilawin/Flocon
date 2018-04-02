@@ -48,7 +48,7 @@ if __name__ == '__main__':
             frontiere = frontiere_up.copy()
             tableau_cellules = dc(updated_tableau)
             if i % 25 == 0:
-                generer_image(cristal)
+                generer_image(chemin, cristal, i//25)
 
     except KeyboardInterrupt:
         rep = input("Voulez vous effacer le dossier en cours ? ")

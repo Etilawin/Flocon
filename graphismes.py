@@ -1,6 +1,9 @@
 # coding: utf-8
 from PIL import Image, ImageDraw
 from math import sin, pi
+from os.path import join
+
+from constantes import W, H, W_TABLEAU, H_TABLEAU, T_HEXAGONES
 
 
 def _mettre_a_lechelle(generateur, width, height, cristal, taille=50):
@@ -50,10 +53,10 @@ def generer_hexagones(*args, **kwargs):
     return _mettre_a_lechelle(generer_unitee_hexagonal, *args, **kwargs)
 
 
-def generer_image(cr):
+def generer_image(path, cr, n):
     flocon = Image.new('RGB', (W, H))
     for infos in generer_hexagones(W, H, taille=T_HEXAGONES, cristal=cr):
         shape = infos[0]
         color = infos[-1]
         ImageDraw.Draw(flocon).polygon(shape, fill=color)
-    flocon.save(join(chemin, "image" + str(i // 25) + ".png"))
+    flocon.save(join(path, "image" + str(n) + ".png"))
