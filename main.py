@@ -1,6 +1,6 @@
 # coding: utf-8
-# from pycallgraph import PyCallGraph
-# from pycallgraph.output import GraphvizOutput
+from pycallgraph import PyCallGraph
+from pycallgraph.output import GraphvizOutput
 from copy import deepcopy as dc
 from os.path import join
 
@@ -12,7 +12,7 @@ voisins = {}
 cristal = set()
 frontiere = set()
 
-if __name__ == '__main__':
+with PyCallGraph(output=GraphvizOutput()):
 
     initialiser(tableau_cellules, voisins, cristal, frontiere)
 
