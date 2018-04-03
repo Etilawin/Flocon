@@ -11,7 +11,7 @@ from graphismes import *
 from constantes import CONSTANTES
 
 parser = ArgumentParser(description="Parser comprenant tout les paramètres possibles et imaginables")
-
+# https://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser.add_argument
 tableau_cellules = []
 voisins = {}
 cristal = set()
@@ -30,7 +30,7 @@ for colonne in range(CONSTANTES['W_TABLEAU']):
 all_possibilities.difference_update(cristal)
 
 try:
-    for i in range(ITERATIONS):
+    for i in range(CONSTANTES['ITERATIONS']):
         updated_tableau = dc(tableau_cellules)
         frontiere_up = frontiere.copy()
 
