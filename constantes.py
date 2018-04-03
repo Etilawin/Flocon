@@ -1,4 +1,5 @@
 # coding: utf-8
+""" Fichier contenant toute les constantes nécessaires à la croissance d'un flocon """
 from math import sin, pi
 
 W = 2000
@@ -11,7 +12,7 @@ W_TABLEAU = int(W / (2 * T_HEXAGONES)) + 2
 H_TABLEAU += H_TABLEAU % 2
 W_TABLEAU += W_TABLEAU % 2
 
-ITERATIONS = 100
+ITERATIONS = 3300
 
 KAPPA = 0.8
 BETA  = 1.7

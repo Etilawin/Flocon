@@ -1,8 +1,9 @@
 # coding: utf-8
-from pycallgraph import PyCallGraph
-from pycallgraph.output import GraphvizOutput
+# from pycallgraph import PyCallGraph
+# from pycallgraph.output import GraphvizOutput
 from copy import deepcopy as dc
 from os.path import join
+from shutil import rmtree
 
 from fonctions_process import *
 from graphismes import *
@@ -12,7 +13,7 @@ voisins = {}
 cristal = set()
 frontiere = set()
 
-with PyCallGraph(output=GraphvizOutput()):
+if __name__ == "__main__":
 
     initialiser(tableau_cellules, voisins, cristal, frontiere)
 
@@ -41,7 +42,9 @@ with PyCallGraph(output=GraphvizOutput()):
                 voisins_cel = voisins[colonne, ligne]
                 gel(cel_up)
                 attachement(cel_up, voisins_cel, tableau_cellules)
-                if not cel_up[0]:
+                if cel_up[0]: # Si elle vient d'être rattaché au cristal
+                    update_frontiere(colonne, ligne, cristal, frontiere_up, voisins)
+                else: # Sinon
                     fonte(cel_up)
                     bruit(cel_up)
 

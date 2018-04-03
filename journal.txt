@@ -12,6 +12,16 @@ Code propre et fonctionnel ajout de nombreuses fonction
 26/03/2018:
 Erreurs à corriger / Deepcopy à faire pour tout mettre à jour d'un seul coup
 
-A venir :
-Commentaires
-Affichage graphique
+28/03/2018:
+Premiers essais de pavage hexagonal
+
+01/04/2018:
+Pavage hexagonal fait et prêt
+
+02/04/2018:
+Séparation en plusieurs fichiers et réadaptation du code
+Utilisation de PyCallGraph pour faire du profiling et savoir comment améliorer le code
+
+03/04/2018:
+Docstrings (le meilleur pour la fin)
+README.md à faire (équivalent lisezmoi.txt)
