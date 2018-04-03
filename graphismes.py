@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 from math import sin, pi
 from os.path import join
 
-from constantes import W, H, W_TABLEAU, H_TABLEAU, T_HEXAGONES
+from constantes import CONSTANTES
 
 
 def _mettre_a_lechelle(generateur, width, height, cristal, taille=50):
@@ -29,8 +29,8 @@ def generer_unitee_hexagonal(width, height, cristal):
 
             color = (0, 0, 0)
             if (colonne, ligne) in cristal:
-                dx = abs(W_TABLEAU - colonne) % 256
-                dy = abs(H_TABLEAU - ligne) % 256
+                dx = abs(CONSTANTES['W_TABLEAU'] - colonne) % 256
+                dy = abs(CONSTANTES['H_TABLEAU'] - ligne) % 256
                 color = (dx, dy, (dx + dy) // 2)
 
             ligne += 2
@@ -54,8 +54,8 @@ def generer_hexagones(*args, **kwargs):
 
 
 def generer_image(path, cr, n):
-    flocon = Image.new('RGB', (W, H))
-    for infos in generer_hexagones(W, H, taille=T_HEXAGONES, cristal=cr):
+    flocon = Image.new('RGB', (CONSTANTES['W'], CONSTANTES['H']))
+    for infos in generer_hexagones(CONSTANTES['W'], CONSTANTES['H'], taille=CONSTANTES['T_HEXAGONES'], cristal=cr):
         shape = infos[0]
         color = infos[-1]
         ImageDraw.Draw(flocon).polygon(shape, fill=color)

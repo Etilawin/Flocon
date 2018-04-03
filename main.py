@@ -1,12 +1,13 @@
 # coding: utf-8
-# from pycallgraph import PyCallGraph
-# from pycallgraph.output import GraphvizOutput
+## from pycallgraph import PyCallGraph
+## from pycallgraph.output import GraphvizOutput
 from copy import deepcopy as dc
 from os.path import join
 from shutil import rmtree
 
 from fonctions_process import *
 from graphismes import *
+from constantes import CONSTANTES
 
 tableau_cellules = []
 voisins = {}
@@ -19,23 +20,22 @@ if __name__ == "__main__":
 
     chemin = create_folder()
 
-    all_possibilities = []
-    add_to_all = all_possibilities.append
-    for colonne in range(W_TABLEAU):
-        for ligne in range(H_TABLEAU):
+    all_possibilities = set()
+    add_to_all = all_possibilities.add
+    for colonne in range(CONSTANTES['W_TABLEAU']):
+        for ligne in range(CONSTANTES['H_TABLEAU']):
             add_to_all((colonne, ligne))
+
+    all_possibilities.difference_update(cristal)
 
     try:
         for i in range(ITERATIONS):
             updated_tableau = dc(tableau_cellules)
             frontiere_up = frontiere.copy()
 
-            for (colonne, ligne) in all_possibilities:  # Évite de recréer à chaque fois un range
-                cel = tableau_cellules[colonne][ligne]
-                if not cel[0]:
-                    cel_up = updated_tableau[colonne][ligne]
-                    voisins_cel = voisins[colonne, ligne]
-                    diffusion(cel, cel_up, voisins_cel, tableau_cellules)
+            # Mettre la boucle à l'intérieur de la fonction augmente considérablement le temps d'execution (environ 4*)
+            # https://wiki.python.org/moin/PythonSpeed/PerformanceTips#Data_Aggregation
+            diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities)
 
             for (colonne, ligne) in frontiere:
                 cel_up = updated_tableau[colonne][ligne]
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                 gel(cel_up)
                 attachement(cel_up, voisins_cel, tableau_cellules)
                 if cel_up[0]: # Si elle vient d'être rattaché au cristal
-                    update_frontiere(colonne, ligne, cristal, frontiere_up, voisins)
+                    update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibilities)
                 else: # Sinon
                     fonte(cel_up)
                     bruit(cel_up)

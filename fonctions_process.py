@@ -4,7 +4,7 @@ from random import randint
 from os.path import join, exists
 from os import makedirs
 
-from constantes import *
+from constantes import CONSTANTES
 
 def initialiser(tableau_cellules, voisins, cristal, frontiere):
     """
@@ -17,16 +17,16 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
     Retourne : None
     C.U : Aucune
     """
-    tableau_cellules.extend([[] for i in range(W_TABLEAU)]) # List comprehension is faster
-    for colonne in range(W_TABLEAU):
+    tableau_cellules.extend([[] for i in range(CONSTANTES['W_TABLEAU'])]) # List comprehension is faster
+    for colonne in range(CONSTANTES['W_TABLEAU']):
         add_ligne = tableau_cellules[colonne].append
-        for ligne in range(H_TABLEAU):
+        for ligne in range(CONSTANTES['H_TABLEAU']):
             # Création de la cellule
-            if ligne == H_TABLEAU / 2 and colonne == W_TABLEAU / 2:
+            if ligne == CONSTANTES['H_TABLEAU'] / 2 and colonne == CONSTANTES['W_TABLEAU'] / 2:
                 cellule = [True, 0, 1, 0]
                 cristal.add((colonne, ligne))
             else:
-                cellule = [False, 0, 0, RHO]
+                cellule = [False, 0, 0, CONSTANTES['RHO']]
             add_ligne(cellule)
             # Coordonées des voisins
             # Lignes...
@@ -53,12 +53,12 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
                                            (colonne + 1, ligne),
                                            (colonne + 1, ligne + 1)]
 
-            voisins[colonne, ligne] = list(filter(lambda x: (x[0] != W_TABLEAU and
-                                                             x[1] != H_TABLEAU and
+            voisins[colonne, ligne] = list(filter(lambda x: (x[0] != CONSTANTES['W_TABLEAU'] and
+                                                             x[1] != CONSTANTES['H_TABLEAU'] and
                                                              x[0] != -1 and
                                                              x[1] != -1),
                                                   voisins[colonne, ligne]))
-    frontiere.update(voisins[W_TABLEAU / 2, H_TABLEAU / 2])
+    frontiere.update(voisins[CONSTANTES['W_TABLEAU'] / 2, CONSTANTES['H_TABLEAU'] / 2])
 
 
 def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
@@ -86,7 +86,7 @@ def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
         return [tableau_cellules[colonne][ligne] for (colonne, ligne) in cellules_voisines]
 
 
-def diffusion(cel, cel_up, voisins_cel, tableau_cellules):
+def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
     """
     Fonction qui effectue la diffusion de la vapeur d'une cellule sur ses voisins
     paramètre ligne : (int) la ligne de la cellule concernée
@@ -94,16 +94,24 @@ def diffusion(cel, cel_up, voisins_cel, tableau_cellules):
     retourne : None
     C.U : None
     """
-    v = get_cel_voisin(tableau_cellules, voisins_cel)
-    moyenne = cel[3]
-    for cellule in v:
-        if cellule[0]:
-            moyenne += cel[3]
-        else:
-            moyenne += cellule[3]
-    moyenne /= (len(v) + 1)
+    for (colonne, ligne) in all_possibilities:
+        cel = tableau_cellules[colonne][ligne]
+        cel_up = updated_tableau[colonne][ligne]
+        voisins_de_cellule = voisins[colonne, ligne]
+        cellules_voisines = get_cel_voisin(tableau_cellules, voisins_de_cellule)
 
-    cel_up[3] = moyenne
+        moyenne = cel[3]
+        for cellule_voisine in cellules_voisines:
+            # Si la cellule voisine est dans le cristal on ajoute seulement la
+            # valeur de la cellule actuelle sinon on ajoute la veleur d(x) des
+            # cellules voisines
+            if cellule_voisine[0]:
+                moyenne += cel[3]
+            else:
+                moyenne += cellule_voisine[3]
+        moyenne /= (len(voisins_de_cellule) + 1)
+
+        cel_up[3] = moyenne
 
 
 def gel(cel_up):
@@ -114,8 +122,8 @@ def gel(cel_up):
     retourne : None
     C.U : None
     """
-    cel_up[1] = cel_up[1] + (1 - KAPPA) * cel_up[3]
-    cel_up[2] = cel_up[2] + KAPPA * cel_up[3]
+    cel_up[1] = cel_up[1] + (1 - CONSTANTES['KAPPA']) * cel_up[3]
+    cel_up[2] = cel_up[2] + CONSTANTES['KAPPA'] * cel_up[3]
     cel_up[3] = 0
 
 
@@ -130,13 +138,13 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
     voisins_du_cristal = len([x for x in get_cel_voisin(tableau_cellules, voisins_cel) if x[0]])
     in_cristal = False
     if voisins_du_cristal <= 2:
-        if cel_up[1] > BETA:
+        if cel_up[1] > CONSTANTES['BETA']:
             in_cristal = True
     elif voisins_du_cristal == 3:
         somme_voisins = sum(get_cel_voisin(tableau_cellules, voisins_cel, 3))
         if cel_up[1] >= 1:
             in_cristal = True
-        elif somme_voisins < THETA and cel_up[1] >= ALPHA:
+        elif somme_voisins < CONSTANTES['THETA'] and cel_up[1] >= CONSTANTES['ALPHA']:
             in_cristal = True
     elif voisins_du_cristal >= 4:
         in_cristal = True
@@ -154,9 +162,9 @@ def fonte(cel_up):
     retourne : None
     C.U : None
     """
-    cel_up[3] = cel_up[3] + MU * cel_up[1] + GAMMA * cel_up[2]
-    cel_up[1] = (1 - MU) * cel_up[1]
-    cel_up[2] = (1 - GAMMA) * cel_up[2]
+    cel_up[3] = cel_up[3] + CONSTANTES['MU'] * cel_up[1] + CONSTANTES['GAMMA'] * cel_up[2]
+    cel_up[1] = (1 - CONSTANTES['MU']) * cel_up[1]
+    cel_up[2] = (1 - CONSTANTES['GAMMA']) * cel_up[2]
 
 
 def bruit(cel_up):
@@ -168,11 +176,12 @@ def bruit(cel_up):
     C.U : None
     """
     i = randint(-1, 1)
-    cel_up[3] *= 1 + i * SIGMA
+    cel_up[3] *= 1 + i * CONSTANTES['SIGMA']
 
-def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins):
+def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibilities):
     """ Met à jour la frontière """
     cristal.add((colonne, ligne))
+    all_possibilities.difference_update(cristal)
     frontiere_up.remove((colonne, ligne))
     add = frontiere_up.add
     for colonne1, ligne1 in voisins[colonne, ligne]:
