@@ -11,7 +11,7 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
     Fonction qui initialise le script en générant tableau_cellules et voisins au fur et à mesure
     Paramètres :
         - tableau_cellules : (list) le tableau contenant les cellules / molécules que l'on va mettre à jour
-        - voisins          : (dictionnaire) Le dictionnaire qui contiendra les voisins de chaque ligne / colonne
+        - voisins          : (dict) Le dictionnaire qui contiendra les voisins de chaque ligne / colonne
         - cristal          : (set) Le cristal c.a.d ce qui contiendra les cellules gelées et rattachées au cristal. Les valeurs sont des tuples (colonne, ligne)
         - frontiere        : (set) La frontière c.a.d toutes les (colonnes, lignes) voisines du cristal
     Retourne : None
@@ -89,9 +89,12 @@ def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
 def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
     """
     Fonction qui effectue la diffusion de la vapeur d'une cellule sur ses voisins
-    paramètre ligne : (int) la ligne de la cellule concernée
-    paramètre colonne : (int) la colonne de la cellule concernée
-    retourne : None
+    Paramètres :
+        - tableau_cellules  : (list) Le tableau contenant les cellules / molécules que l'on va mettre à jour
+        - updated_tableau   : (list) Une copie de tableau_cellules pour tout mettre à jour d'un seul coup
+        - voisins           : (dict) Le dictionnaire qui contiendra les voisins de chaque ligne / colonne
+        - all_possibilities : (list) Liste contenant toute les possibilités d'associations de liste / colonne
+    Retourne : None
     C.U : None
     """
     for (colonne, ligne) in all_possibilities:
@@ -117,9 +120,9 @@ def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
 def gel(cel_up):
     """
     Fonction qui effectue le gel pour la cellule
-    paramètre ligne : (int) la ligne de la cellule concernée
-    paramètre colonne : (int) la colonne de la cellule concernée
-    retourne : None
+    Paramètres :
+        - cel_up : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
+    Retourne : None
     C.U : None
     """
     cel_up[1] = cel_up[1] + (1 - CONSTANTES['KAPPA']) * cel_up[3]
@@ -130,9 +133,11 @@ def gel(cel_up):
 def attachement(cel_up, voisins_cel, tableau_cellules):
     """
     Fonction qui décide si la cellule doit se coller ou non au cristal
-    paramètre ligne : (int) la ligne de la cellule concernée
-    paramètre colonne : (int) la colonne de la cellule concernée
-    retourne : None
+    Paramètres :
+        - cel_up           : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
+        - voisins_cel      : (list) Liste contenant tout les voisins de la cellule cel_up sous forme (colonne, ligne)
+        - tableau_cellules  : (list) Le tableau contenant les cellules / molécules que l'on va mettre à jour
+    Retourne : None
     C.U : None
     """
     voisins_du_cristal = len([x for x in get_cel_voisin(tableau_cellules, voisins_cel) if x[0]])
@@ -157,9 +162,9 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
 def fonte(cel_up):
     """
     Fonction qui fait l'action contraire du gel sur une cellule
-    paramètre ligne : (int) La ligne de la cellule concernée
-    paramètre colonne : (int) La colonne de la cellule concernée
-    retourne : None
+    Paramètres :
+        - cel_up : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
+    Retourne : None
     C.U : None
     """
     cel_up[3] = cel_up[3] + CONSTANTES['MU'] * cel_up[1] + CONSTANTES['GAMMA'] * cel_up[2]
@@ -170,16 +175,27 @@ def fonte(cel_up):
 def bruit(cel_up):
     """
     Fonction qui ajoute de l'aléatoire dans la génération du flocon
-    paramètre ligne : (int) La ligne de la cellule concernée
-    paramètre colonne : (int) La colonne de la cellule concernée
-    retourne : None
+    Paramètres :
+        - cel_up : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
+    Retourne : None
     C.U : None
     """
     i = randint(-1, 1)
     cel_up[3] *= 1 + i * CONSTANTES['SIGMA']
 
 def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibilities):
-    """ Met à jour la frontière """
+    """
+    Fonction qui met à jour la frontière
+    Paramètres :
+        - colonne           : (int) La colonne correspondant à la cellule
+        - ligne             : (int) La ligne correspondant à la cellule
+        - cristal           : (set) Le cristal c.a.d ce qui contiendra les cellules gelées et rattachées au cristal. Les valeurs sont des tuples (colonne, ligne)
+        - frontiere_up      : (set) La frontière mis à jour
+        - voisins           : (dict) Le dictionnaire qui contiendra les voisins de chaque ligne / colonne
+        - all_possibilities : (list) Liste contenant toute les possibilités d'associations de liste / colonne
+    Retourne : None
+    C.U : None (adultes consentants tout ça)
+    """
     cristal.add((colonne, ligne))
     all_possibilities.difference_update(cristal)
     frontiere_up.remove((colonne, ligne))
