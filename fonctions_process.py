@@ -9,7 +9,7 @@ from constantes import *
 def initialiser(tableau_cellules, voisins, cristal, frontiere):
     """
     Fonction qui initialise le script en générant tableau_cellules et voisins au fur et à mesure
-    Paramètre :
+    Paramètres :
         - tableau_cellules : (list) le tableau contenant les cellules / molécules que l'on va mettre à jour
         - voisins          : (dictionnaire) Le dictionnaire qui contiendra les voisins de chaque ligne / colonne
         - cristal          : (set) Le cristal c.a.d ce qui contiendra les cellules gelées et rattachées au cristal. Les valeurs sont des tuples (colonne, ligne)
@@ -64,9 +64,21 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
 def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
     """
     Fonction qui renvoi les cellules associés aux voisins sous forme d'une liste
-    paramètre voisin : (list) Liste comprenant des voisins
-    retourn : None
-    C.U : None
+    Paramètres :
+        - tableau_cellules  : (list) le tableau contenant les cellules / molécules que l'on va mettre à jour
+        - cellules_voisines : (list) Liste contenant les coordonées des cellules voisines pour lesquelles on veut les valeurs de n
+        - n                 : (int)  Le paramètre que l'on veut récupérer. Si la valeur appartient à [[0;5]] Alors on renvoi cette valeur des cellules sinon on renvoi les cellules en elles même
+    Retourne : (list) La liste contenant les valeurs de n des cellules voisines ou à défaut les cellules elles-même
+    C.U : n doit être un entier (Mais nous sommes entre adultes consentants... N'est-ce pas ?)
+
+    Exemple :
+    >>> tableau_cellules = [[[0,1,0,2], [0,5,0,7]],
+                            [[0,2,0,1], [0,3,0,2]]]
+    >>> cellules_voisines = [(0,1), (1,0)]
+    >>> get_cel_voisin(tableau_cellules, cellules_voisines, n=1)
+    [5, 2]
+    >>> get_cel_voisin(tableau_cellules, cellules_voisines, n=1)
+    [[0,5,0,7], [0,2,0,1]]
     """
     if 0 <= n < 5:
         return [tableau_cellules[colonne][ligne][n] for (colonne, ligne) in cellules_voisines]
