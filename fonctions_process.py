@@ -6,6 +6,7 @@ from os import makedirs
 
 from constantes import CONSTANTES
 
+
 def initialiser(tableau_cellules, voisins, cristal, frontiere):
     """
     Fonction qui initialise le script en générant tableau_cellules et voisins au fur et à mesure
@@ -17,7 +18,8 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
     Retourne : None
     C.U : Aucune
     """
-    tableau_cellules.extend([[] for i in range(CONSTANTES['W_TABLEAU'])]) # List comprehension is faster
+    tableau_cellules.extend(
+        [[] for i in range(CONSTANTES['W_TABLEAU'])])  # List comprehension is faster
     for colonne in range(CONSTANTES['W_TABLEAU']):
         add_ligne = tableau_cellules[colonne].append
         for ligne in range(CONSTANTES['H_TABLEAU']):
@@ -38,7 +40,7 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
             # 0 1 1
             # 1 x 1
             # 0 1 1
-            if ligne % 2 == 0:
+            if ligne % 2 == 0:  # On ajoute les voisins pour éviter de les recalculer à chaque fois
                 voisins[colonne, ligne] = [(colonne - 1, ligne - 1),
                                            (colonne - 1, ligne),
                                            (colonne - 1, ligne + 1),
@@ -58,7 +60,8 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
                                                              x[0] != -1 and
                                                              x[1] != -1),
                                                   voisins[colonne, ligne]))
-    frontiere.update(voisins[CONSTANTES['W_TABLEAU'] / 2, CONSTANTES['H_TABLEAU'] / 2])
+    frontiere.update(voisins[CONSTANTES['W_TABLEAU'] /
+                             2, CONSTANTES['H_TABLEAU'] / 2])
 
 
 def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
@@ -80,9 +83,9 @@ def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
     >>> get_cel_voisin(tableau_cellules, cellules_voisines, n=1)
     [[0,5,0,7], [0,2,0,1]]
     """
-    if 0 <= n < 5:
+    if 0 <= n < 5:  # Si on donne un n valable on l'utilise ...
         return [tableau_cellules[colonne][ligne][n] for (colonne, ligne) in cellules_voisines]
-    else:
+    else:  # Sinon on renvoi les cellules en entier
         return [tableau_cellules[colonne][ligne] for (colonne, ligne) in cellules_voisines]
 
 
@@ -101,7 +104,8 @@ def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
         cel = tableau_cellules[colonne][ligne]
         cel_up = updated_tableau[colonne][ligne]
         voisins_de_cellule = voisins[colonne, ligne]
-        cellules_voisines = get_cel_voisin(tableau_cellules, voisins_de_cellule)
+        cellules_voisines = get_cel_voisin(
+            tableau_cellules, voisins_de_cellule)
 
         moyenne = cel[3]
         for cellule_voisine in cellules_voisines:
@@ -125,6 +129,7 @@ def gel(cel_up):
     Retourne : None
     C.U : None
     """
+    # Voir sujet ... Rien de plus à expliqer !
     cel_up[1] = cel_up[1] + (1 - CONSTANTES['KAPPA']) * cel_up[3]
     cel_up[2] = cel_up[2] + CONSTANTES['KAPPA'] * cel_up[3]
     cel_up[3] = 0
@@ -134,23 +139,29 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
     """
     Fonction qui décide si la cellule doit se coller ou non au cristal
     Paramètres :
-        - cel_up           : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
-        - voisins_cel      : (list) Liste contenant tout les voisins de la cellule cel_up sous forme (colonne, ligne)
+        - cel_up            : (list) La cellule concernée que l'on veut mettre à jour à la frontiere
+        - voisins_cel       : (list) Liste contenant tout les voisins de la cellule cel_up sous forme (colonne, ligne)
         - tableau_cellules  : (list) Le tableau contenant les cellules / molécules que l'on va mettre à jour
     Retourne : None
     C.U : None
     """
-    voisins_du_cristal = len([x for x in get_cel_voisin(tableau_cellules, voisins_cel) if x[0]])
+    # Une petite explication quand même :
+    # on fait la somme des True et False dans la liste des voisins
+    # Sachant que True = 1 et False = 0 la somme sera égale au nombre de voisins
+    voisins_du_cristal = sum(get_cel_voisin(tableau_cellules, voisins_cel, 0))
     in_cristal = False
     if voisins_du_cristal <= 2:
         if cel_up[1] > CONSTANTES['BETA']:
             in_cristal = True
+
     elif voisins_du_cristal == 3:
+        # La somme des d(x) voisins
         somme_voisins = sum(get_cel_voisin(tableau_cellules, voisins_cel, 3))
         if cel_up[1] >= 1:
             in_cristal = True
         elif somme_voisins < CONSTANTES['THETA'] and cel_up[1] >= CONSTANTES['ALPHA']:
             in_cristal = True
+            
     elif voisins_du_cristal >= 4:
         in_cristal = True
 
@@ -158,6 +169,7 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
         cel_up[2] = cel_up[2] + cel_up[1]
         cel_up[1] = cel_up[3] = 0
         cel_up[0] = True
+
 
 def fonte(cel_up):
     """
@@ -167,7 +179,8 @@ def fonte(cel_up):
     Retourne : None
     C.U : None
     """
-    cel_up[3] = cel_up[3] + CONSTANTES['MU'] * cel_up[1] + CONSTANTES['GAMMA'] * cel_up[2]
+    cel_up[3] = cel_up[3] + CONSTANTES['MU'] * \
+        cel_up[1] + CONSTANTES['GAMMA'] * cel_up[2]
     cel_up[1] = (1 - CONSTANTES['MU']) * cel_up[1]
     cel_up[2] = (1 - CONSTANTES['GAMMA']) * cel_up[2]
 
@@ -180,8 +193,9 @@ def bruit(cel_up):
     Retourne : None
     C.U : None
     """
-    i = randint(-1, 1)
+    i = randint(-1, 1)  # On additionne ou on soustrait ?
     cel_up[3] *= 1 + i * CONSTANTES['SIGMA']
+
 
 def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibilities):
     """
@@ -196,16 +210,23 @@ def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibi
     Retourne : None
     C.U : None (adultes consentants tout ça)
     """
+    # Si on est ici c'est qu'il y a eu attachement au cristal
+    # donc on ajoute au cristal
     cristal.add((colonne, ligne))
-    all_possibilities.difference_update(cristal)
     frontiere_up.remove((colonne, ligne))
     add = frontiere_up.add
     for colonne1, ligne1 in voisins[colonne, ligne]:
         if (colonne1, ligne1) not in cristal:
             add((colonne1, ligne1))
 
+
 def create_folder():
-    """ Fonction qui créer un dossier pour stocker les images """
+    """
+    Fonction qui créer un dossier pour stocker les images
+    Paramètres : None
+    Retourne : None
+    C.U : None
+    """
     base = join("images", "images_")
     i = 0
     while exists(base + str(i)):
