@@ -161,7 +161,7 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
             in_cristal = True
         elif somme_voisins < CONSTANTES['THETA'] and cel_up[1] >= CONSTANTES['ALPHA']:
             in_cristal = True
-            
+
     elif voisins_du_cristal >= 4:
         in_cristal = True
 
@@ -220,14 +220,19 @@ def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibi
             add((colonne1, ligne1))
 
 
-def create_folder():
+def create_folder(chemin):
     """
     Fonction qui créer un dossier pour stocker les images
-    Paramètres : None
+    Paramètres :
+        - chemin : (str) le chemin où seront stockées les images
     Retourne : None
     C.U : None
     """
-    base = join("images", "images_")
+    try:
+        makedirs(chemin)
+    except FileExistsError:
+        pass # Le dossier existe déjà pas besoin de le recréer
+    base = join(chemin, "images_")
     i = 0
     while exists(base + str(i)):
         i += 1
@@ -250,13 +255,13 @@ def load_constants(path):
               "mu",
               "gamma",
               "sigma"]
-              
-              
-    with open(path) as file:
-        contenu = file.read()
+
+
+    with open(path) as f:
+        contenu = f.read()
 
     contenu = contenu.lower().split("\n")
-    for line in file:
+    for line in contenu:
         for c in consts:
             if line.index(c) != -1 and line.index('=') != -1:
                 egal = line.index('=')
