@@ -233,3 +233,31 @@ def create_folder():
         i += 1
     makedirs(base + str(i))
     return base + str(i)
+
+def load_constants(path):
+    """
+    Fonction qui charge les constantes d'un dossier
+    Paramètres :
+        - path : (str) le chemin où se trouvent les constantes
+    Retourne : None
+    C.U : None
+    """
+    consts = ["kappa",
+              "beta",
+              "alpha",
+              "theta",
+              "rho",
+              "mu",
+              "gamma",
+              "sigma"]
+              
+              
+    with open(path) as file:
+        contenu = file.read()
+
+    contenu = contenu.lower().split("\n")
+    for line in file:
+        for c in consts:
+            if line.index(c) != -1 and line.index('=') != -1:
+                egal = line.index('=')
+                CONSTANTES[c.upper()] = int(line[egal + 1:])

@@ -13,14 +13,22 @@ from constantes import CONSTANTES
 
 parser = ArgumentParser(
     description="Parser comprenant tout les paramètres possibles et imaginables")
-parser.add_argument("-c"    , nargs=1, type=str, required=False, help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
-parser.add_argument("-i"    , nargs=1, type=int, required=False, help="Le nombre d'itérations pour le flocon")
-parser.add_argument("-p"    , nargs=1, type=str, required=False, help="Le chemin où vous voulez que les photos soient stockées")
-parser.add_argument("-t"    , nargs=1, type=int, required=False, help="La taille des hexagones")
-parser.add_argument("--rate", nargs=1, type=int, required=False, help="Tout les combien de framerates vous voulez sauvegarder une image")
-parser.add_argument("--width"    , nargs=1, type=int, required=False, help="La largeur de l'image, va avec l'option -h")
-parser.add_argument("--height"    , nargs=1, type=int, required=False, help="La hauteur de l'image, va avec l'option -w")
-parser.print_help()
+parser.add_argument("-c"       , nargs=1, type=str, required=False, metavar="file.txt"   , help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
+parser.add_argument("-i"       , nargs=1, type=int, required=False, metavar="Iterations" , help="Le nombre d'itérations pour le flocon")
+parser.add_argument("-p"       , nargs=1, type=str, required=False, metavar="photos/"    , help="Le chemin où vous voulez que les photos soient stockées")
+parser.add_argument("-t"       , nargs=1, type=int, required=False, metavar="taille"     , help="La taille des hexagones")
+parser.add_argument("--rate"   , nargs=1, type=int, required=False, metavar="framerate"  , help="Tout les combien de framerates vous voulez sauvegarder une image")
+parser.add_argument("--width"  , nargs=1, type=int, required=False, help="La largeur de l'image, va avec l'option -h")
+parser.add_argument("--height" , nargs=1, type=int, required=False, help="La hauteur de l'image, va avec l'option -w")
+arguments = parser.parse_args()
+
+if arguments.c:
+    try:
+        load_constants(arguments.c)
+    except:
+        print("Erreur lors de la lecture du fichier, les variables par défaut seront prises")
+
+assert False
 
 # https://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser.add_argument
 tableau_cellules = []
@@ -67,8 +75,8 @@ try:
         frontiere = frontiere_up.copy()
         tableau_cellules = dc(updated_tableau)
 
-        if i % 25 == 0:
-            generer_image(chemin, cristal, i // 25)
+        if i % t == 0:
+            generer_image(chemin, cristal, i // t)
 
 except KeyboardInterrupt:
     rep = input("Voulez vous effacer le dossier en cours ? ")
