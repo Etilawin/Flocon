@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from math import sin, pi
 from os.path import join
 
-from constantes import CONSTANTES
+import constantes
 
 
 def _mettre_a_lechelle(generateur, width, height, cristal, taille=5):
@@ -57,6 +57,25 @@ def generer_unitee_hexagonal(width, height, cristal):
     # La deuxième colonne est en fait toujours la première
     # Et on fait une ligne sur 2 encore une fois
     # Pour mieux comprendre : https://www.redblobgames.com/grids/hexagons/#coordinates-offset
+    # x = -1
+    # ⬡
+    #
+    # ⬡
+    #
+    # ⬡
+    # x = 0
+    # ⬡
+    #   ⬡
+    # ⬡
+    #   ⬡
+    # ⬡
+    # x = 1
+    # ⬡   ⬡
+    #   ⬡
+    # ⬡   ⬡
+    #   ⬡
+    # ⬡   ⬡
+    # Etc...
 
 
     # Moitié de la taille de l'hexagone (SOHCAHTOA)
@@ -70,8 +89,8 @@ def generer_unitee_hexagonal(width, height, cristal):
 
             color = (0, 0, 0)
             if (colonne, ligne) in cristal:
-                dx = abs(CONSTANTES['W_TABLEAU'] - colonne) % 256
-                dy = abs(CONSTANTES['H_TABLEAU'] - ligne) % 256
+                dx = abs(constantes.W_TABLEAU - colonne) % 256
+                dy = abs(constantes.H_TABLEAU - ligne) % 256
                 color = (dx, dy, (dx + dy) // 2)
 
             ligne += 2
@@ -85,8 +104,6 @@ def generer_unitee_hexagonal(width, height, cristal):
                 ((x + 1) * l,    y_ - 0.5),
                 color,
             ]
-        if x % 2 == 0:
-            colonne += 1
         colonne = (colonne + 1) if (x % 2 == 0) else colonne
 
 
@@ -116,8 +133,8 @@ def generer_image(path, cr, n):
         - cr   : (set) Le cristal c.a.d ce qui contiendra les cellules gelées et rattachées au cristal. Les valeurs sont des tuples (colonne, ligne)
         - n    : (int) Le numéro de l'image
     """
-    flocon = Image.new('RGB', (CONSTANTES['W'], CONSTANTES['H']))
-    for infos in generer_hexagones(CONSTANTES['W'], CONSTANTES['H'], taille=CONSTANTES['T_HEXAGONES'], cristal=cr):
+    flocon = Image.new('RGB', (constantes.W, constantes.H))
+    for infos in generer_hexagones(constantes.W, constantes.H, taille=constantes.T_HEXAGONES, cristal=cr):
         shape = infos[0]
         color = infos[-1]
         ImageDraw.Draw(flocon).polygon(shape, fill=color)

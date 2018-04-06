@@ -4,8 +4,7 @@ from random import randint
 from os.path import join, exists
 from os import makedirs
 
-from constantes import CONSTANTES
-
+import constantes
 
 def initialiser(tableau_cellules, voisins, cristal, frontiere):
     """
@@ -18,17 +17,16 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
     Retourne : None
     C.U : Aucune
     """
-    tableau_cellules.extend(
-        [[] for i in range(CONSTANTES['W_TABLEAU'])])  # List comprehension is faster
-    for colonne in range(CONSTANTES['W_TABLEAU']):
+    tableau_cellules.extend([[] for i in range(constantes.W_TABLEAU)])  # List comprehension is faster
+    for colonne in range(constantes.W_TABLEAU):
         add_ligne = tableau_cellules[colonne].append
-        for ligne in range(CONSTANTES['H_TABLEAU']):
+        for ligne in range(constantes.H_TABLEAU):
             # Création de la cellule
-            if ligne == CONSTANTES['H_TABLEAU'] / 2 and colonne == CONSTANTES['W_TABLEAU'] / 2:
+            if ligne == constantes.H_TABLEAU / 2 and colonne == constantes.W_TABLEAU / 2:
                 cellule = [True, 0, 1, 0]
                 cristal.add((colonne, ligne))
             else:
-                cellule = [False, 0, 0, CONSTANTES['RHO']]
+                cellule = [False, 0, 0, constantes.RHO]
             add_ligne(cellule)
             # Coordonées des voisins
             # Lignes...
@@ -55,13 +53,12 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
                                            (colonne + 1, ligne),
                                            (colonne + 1, ligne + 1)]
 
-            voisins[colonne, ligne] = list(filter(lambda x: (x[0] != CONSTANTES['W_TABLEAU'] and
-                                                             x[1] != CONSTANTES['H_TABLEAU'] and
+            voisins[colonne, ligne] = list(filter(lambda x: (x[0] != constantes.W_TABLEAU and
+                                                             x[1] != constantes.H_TABLEAU and
                                                              x[0] != -1 and
                                                              x[1] != -1),
                                                   voisins[colonne, ligne]))
-    frontiere.update(voisins[CONSTANTES['W_TABLEAU'] /
-                             2, CONSTANTES['H_TABLEAU'] / 2])
+    frontiere.update(voisins[constantes.W_TABLEAU / 2, constantes.H_TABLEAU / 2])
 
 
 def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
@@ -104,8 +101,7 @@ def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
         cel = tableau_cellules[colonne][ligne]
         cel_up = updated_tableau[colonne][ligne]
         voisins_de_cellule = voisins[colonne, ligne]
-        cellules_voisines = get_cel_voisin(
-            tableau_cellules, voisins_de_cellule)
+        cellules_voisines = get_cel_voisin(tableau_cellules, voisins_de_cellule)
 
         moyenne = cel[3]
         for cellule_voisine in cellules_voisines:
@@ -130,8 +126,8 @@ def gel(cel_up):
     C.U : None
     """
     # Voir sujet ... Rien de plus à expliqer !
-    cel_up[1] = cel_up[1] + (1 - CONSTANTES['KAPPA']) * cel_up[3]
-    cel_up[2] = cel_up[2] + CONSTANTES['KAPPA'] * cel_up[3]
+    cel_up[1] = cel_up[1] + (1 - constantes.KAPPA) * cel_up[3]
+    cel_up[2] = cel_up[2] + constantes.KAPPA * cel_up[3]
     cel_up[3] = 0
 
 
@@ -151,7 +147,7 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
     voisins_du_cristal = sum(get_cel_voisin(tableau_cellules, voisins_cel, 0))
     in_cristal = False
     if voisins_du_cristal <= 2:
-        if cel_up[1] > CONSTANTES['BETA']:
+        if cel_up[1] > constantes.BETA:
             in_cristal = True
 
     elif voisins_du_cristal == 3:
@@ -159,7 +155,7 @@ def attachement(cel_up, voisins_cel, tableau_cellules):
         somme_voisins = sum(get_cel_voisin(tableau_cellules, voisins_cel, 3))
         if cel_up[1] >= 1:
             in_cristal = True
-        elif somme_voisins < CONSTANTES['THETA'] and cel_up[1] >= CONSTANTES['ALPHA']:
+        elif somme_voisins < constantes.THETA and cel_up[1] >= constantes.ALPHA:
             in_cristal = True
 
     elif voisins_du_cristal >= 4:
@@ -179,10 +175,9 @@ def fonte(cel_up):
     Retourne : None
     C.U : None
     """
-    cel_up[3] = cel_up[3] + CONSTANTES['MU'] * \
-        cel_up[1] + CONSTANTES['GAMMA'] * cel_up[2]
-    cel_up[1] = (1 - CONSTANTES['MU']) * cel_up[1]
-    cel_up[2] = (1 - CONSTANTES['GAMMA']) * cel_up[2]
+    cel_up[3] = cel_up[3] + constantes.MU * cel_up[1] + constantes.GAMMA * cel_up[2]
+    cel_up[1] = (1 - constantes.MU) * cel_up[1]
+    cel_up[2] = (1 - constantes.GAMMA) * cel_up[2]
 
 
 def bruit(cel_up):
@@ -194,7 +189,7 @@ def bruit(cel_up):
     C.U : None
     """
     i = randint(-1, 1)  # On additionne ou on soustrait ?
-    cel_up[3] *= 1 + i * CONSTANTES['SIGMA']
+    cel_up[3] *= 1 + i * constantes.SIGMA
 
 
 def update_frontiere(colonne, ligne, cristal, frontiere_up, voisins, all_possibilities):
@@ -247,22 +242,25 @@ def load_constants(path):
     Retourne : None
     C.U : None
     """
-    consts = ["kappa",
-              "beta",
-              "alpha",
-              "theta",
-              "rho",
-              "mu",
-              "gamma",
-              "sigma"]
+    consts = [("kappa", constantes.KAPPA),
+              ("beta", constantes.BETA),
+              ("alpha", constantes.ALPHA),
+              ("theta", constantes.THETA),
+              ("rho", constantes.RHO),
+              ("mu", constantes.MU),
+              ("gamma", constantes.GAMMA),
+              ("sigma", constantes.SIGMA)]
 
 
-    with open(path) as f:
+    with open(path, "rt") as f:
         contenu = f.read()
 
     contenu = contenu.lower().split("\n")
     for line in contenu:
-        for c in consts:
-            if line.index(c) != -1 and line.index('=') != -1:
+        for name, value in consts:
+            try :
+                line.index(name)
                 egal = line.index('=')
-                CONSTANTES[c.upper()] = int(line[egal + 1:])
+                value = float(line[egal + 1:])
+            except ValueError:
+                pass
