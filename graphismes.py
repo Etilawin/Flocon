@@ -56,7 +56,7 @@ def generer_unitee_hexagonal(width, height, cristal):
     # La première colonne on commence par le premier et on en fait une ligne sur 2
     # La deuxième colonne est en fait toujours la première
     # Et on fait une ligne sur 2 encore une fois
-    # Pour mieux comprendre :
+    # Pour mieux comprendre : https://www.redblobgames.com/grids/hexagons/#coordinates-offset
 
 
     # Moitié de la taille de l'hexagone (SOHCAHTOA)
@@ -87,6 +87,7 @@ def generer_unitee_hexagonal(width, height, cristal):
             ]
         if x % 2 == 0:
             colonne += 1
+        colonne = (colonne + 1) if (x % 2 == 0) else colonne
 
 
 def generer_hexagones(*args, **kwargs):

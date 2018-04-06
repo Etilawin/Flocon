@@ -13,6 +13,15 @@ from constantes import CONSTANTES
 
 parser = ArgumentParser(
     description="Parser comprenant tout les paramètres possibles et imaginables")
+parser.add_argument("-c"    , nargs=1, type=str, required=False, help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
+parser.add_argument("-i"    , nargs=1, type=int, required=False, help="Le nombre d'itérations pour le flocon")
+parser.add_argument("-p"    , nargs=1, type=str, required=False, help="Le chemin où vous voulez que les photos soient stockées")
+parser.add_argument("-t"    , nargs=1, type=int, required=False, help="La taille des hexagones")
+parser.add_argument("--rate", nargs=1, type=int, required=False, help="Tout les combien de framerates vous voulez sauvegarder une image")
+parser.add_argument("--width"    , nargs=1, type=int, required=False, help="La largeur de l'image, va avec l'option -h")
+parser.add_argument("--height"    , nargs=1, type=int, required=False, help="La hauteur de l'image, va avec l'option -w")
+parser.print_help()
+
 # https://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser.add_argument
 tableau_cellules = []
 voisins = {}
