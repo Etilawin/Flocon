@@ -24,7 +24,7 @@ if __name__ == "__main__":
     parser.add_argument("--rate"   , nargs=1, type=int, required=False, default=[25], metavar="framerate"  , help="Tout les combien de framerates vous voulez sauvegarder une image")
     parser.add_argument("--width"  , nargs=1, type=int, required=False, help="La largeur de l'image, va avec l'option -h")
     parser.add_argument("--height" , nargs=1, type=int, required=False, help="La hauteur de l'image, va avec l'option -w")
-    parser.add_argument("--test", nargs=0)
+    parser.add_argument("--test"   , action="store_true", help="Lance une vérification du programme, tout les autres paramètres sont ignorés")
     arguments = parser.parse_args()
 
     if arguments.test:
@@ -39,12 +39,8 @@ if __name__ == "__main__":
         if arguments.i:
             constantes.ITERATIONS = abs(arguments.i[0])
 
-        chemin_image = arguments.p[0]
-
         if arguments.t:
             constantes.T_HEXAGONES = abs(arguments.t[0])
-
-        rate = abs(arguments.rate[0])
 
         if arguments.width:
             constantes.W = abs(arguments.width[0])
@@ -55,6 +51,8 @@ if __name__ == "__main__":
             constantes.H = abs(arguments.height[0])
             constantes.H_TABLEAU = int(constantes.H / (constantes.T_HEXAGONES * (1 + sin(pi / 3)))) + 2
             constantes.H_TABLEAU += constantes.H_TABLEAU % 2
+    chemin_image = arguments.p[0]
+    rate = abs(arguments.rate[0])
 
     # https://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser.add_argument
     tableau_cellules = []
@@ -109,3 +107,7 @@ if __name__ == "__main__":
         if rep.lower() in ('o', 'oui'):
             rmtree(chemin, ignore_errors=True)
         raise KeyboardInterrupt
+
+    if arguments.test:
+        rmtree(chemin, ignore_errors=True)
+        print("Tout s'est déroulé correctement, le programme marche")
