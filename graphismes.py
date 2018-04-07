@@ -1,5 +1,8 @@
 # coding: utf-8
-""" Fichier contenant toutes les fonctions lié au graphisme """
+"""
+Auteur : Kim Vallée
+Fichier contenant toutes les fonctions lié au graphisme
+"""
 from PIL import Image, ImageDraw
 from math import sin, pi
 from os.path import join

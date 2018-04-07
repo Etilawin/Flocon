@@ -1,5 +1,8 @@
 # coding: utf-8
-""" Fichier contenant toute les constantes nécessaires à la croissance d'un flocon """
+"""
+Auteur : Kim Vallée
+Fichier contenant toute les constantes nécessaires à la croissance d'un flocon
+"""
 from math import sin, pi
 from os.path import join, exists
 

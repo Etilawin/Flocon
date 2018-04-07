@@ -1,5 +1,8 @@
 # coding: utf-8
-""" Le fichier principal contenant l'action même de générer le flocon et de gérer le script """
+"""
+Auteur : Kim Vallée
+Le fichier principal contenant l'action même de générer le flocon et de gérer le script
+"""
 if __name__ == "__main__":
     ## from pycallgraph import PyCallGraph
     ## from pycallgraph.output import GraphvizOutput

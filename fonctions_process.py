@@ -1,5 +1,8 @@
 # coding: utf-8
-""" Fichier contenant les principales fonctions de croissance du flocon """
+"""
+Auteur : Kim Vallée
+Fichier contenant les principales fonctions de croissance du flocon
+"""
 from random import randint
 from os.path import join, exists
 from os import makedirs

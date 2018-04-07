@@ -24,4 +24,7 @@ Utilisation de PyCallGraph pour faire du profiling et savoir comment améliorer l
 
 03/04/2018:
 Docstrings (le meilleur pour la fin)
-README.md à faire (équivalent lisezmoi.txt)
+
+05/04/2018:
+Réadaptation du code et optimisation ainsi qu'ajout de paramètres avec argparse
+README.md en construction et à finir
