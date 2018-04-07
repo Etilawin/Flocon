@@ -9,6 +9,7 @@ from os import makedirs
 
 import constantes
 
+
 def initialiser(tableau_cellules, voisins, cristal, frontiere):
     """
     Fonction qui initialise le script en générant tableau_cellules et voisins au fur et à mesure
@@ -20,7 +21,8 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
     Retourne : None
     C.U : Aucune
     """
-    tableau_cellules.extend([[] for i in range(constantes.W_TABLEAU)])  # List comprehension is faster
+    tableau_cellules.extend(
+        [[] for i in range(constantes.W_TABLEAU)])  # List comprehension is faster
     for colonne in range(constantes.W_TABLEAU):
         add_ligne = tableau_cellules[colonne].append
         for ligne in range(constantes.H_TABLEAU):
@@ -61,7 +63,8 @@ def initialiser(tableau_cellules, voisins, cristal, frontiere):
                                                              x[0] != -1 and
                                                              x[1] != -1),
                                                   voisins[colonne, ligne]))
-    frontiere.update(voisins[constantes.W_TABLEAU / 2, constantes.H_TABLEAU / 2])
+    frontiere.update(voisins[constantes.W_TABLEAU /
+                             2, constantes.H_TABLEAU / 2])
 
 
 def get_cel_voisin(tableau_cellules, cellules_voisines, n=-1):
@@ -104,7 +107,8 @@ def diffusion(tableau_cellules, updated_tableau, voisins, all_possibilities):
         cel = tableau_cellules[colonne][ligne]
         cel_up = updated_tableau[colonne][ligne]
         voisins_de_cellule = voisins[colonne, ligne]
-        cellules_voisines = get_cel_voisin(tableau_cellules, voisins_de_cellule)
+        cellules_voisines = get_cel_voisin(
+            tableau_cellules, voisins_de_cellule)
 
         moyenne = cel[3]
         for cellule_voisine in cellules_voisines:
@@ -178,7 +182,8 @@ def fonte(cel_up):
     Retourne : None
     C.U : None
     """
-    cel_up[3] = cel_up[3] + constantes.MU * cel_up[1] + constantes.GAMMA * cel_up[2]
+    cel_up[3] = cel_up[3] + constantes.MU * \
+        cel_up[1] + constantes.GAMMA * cel_up[2]
     cel_up[1] = (1 - constantes.MU) * cel_up[1]
     cel_up[2] = (1 - constantes.GAMMA) * cel_up[2]
 
@@ -229,13 +234,14 @@ def create_folder(chemin):
     try:
         makedirs(chemin)
     except FileExistsError:
-        pass # Le dossier existe déjà pas besoin de le recréer
+        pass  # Le dossier existe déjà pas besoin de le recréer
     base = join(chemin, "images_")
     i = 0
     while exists(base + str(i)):
         i += 1
     makedirs(base + str(i))
     return base + str(i)
+
 
 def load_constants(path):
     """
@@ -254,14 +260,13 @@ def load_constants(path):
               ("gamma", constantes.GAMMA),
               ("sigma", constantes.SIGMA)]
 
-
     with open(path, "rt") as f:
         contenu = f.read()
 
     contenu = contenu.lower().split("\n")
     for line in contenu:
         for name, value in consts:
-            try :
+            try:
                 line.index(name)
                 egal = line.index('=')
                 value = float(line[egal + 1:])

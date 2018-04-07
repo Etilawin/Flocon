@@ -17,14 +17,22 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(
         description="Parser comprenant tout les paramètres possibles et imaginables")
-    parser.add_argument("-c"       , nargs=1, type=str, required=False, metavar="file.txt"   , help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
-    parser.add_argument("-i"       , nargs=1, type=int, required=False, metavar="Iterations" , help="Le nombre d'itérations pour le flocon")
-    parser.add_argument("-p"       , nargs=1, type=str, required=False, default=["images"], metavar="photos/"    , help="Le chemin où vous voulez que les photos soient stockées")
-    parser.add_argument("-t"       , nargs=1, type=int, required=False, metavar="taille", help="La taille des hexagones")
-    parser.add_argument("--rate"   , nargs=1, type=int, required=False, default=[25], metavar="framerate"  , help="Tout les combien de framerates vous voulez sauvegarder une image")
-    parser.add_argument("--width"  , nargs=1, type=int, required=False, help="La largeur de l'image, va avec l'option -h")
-    parser.add_argument("--height" , nargs=1, type=int, required=False, help="La hauteur de l'image, va avec l'option -w")
-    parser.add_argument("--test"   , action="store_true", help="Lance une vérification du programme, tout les autres paramètres sont ignorés")
+    parser.add_argument("-c", nargs=1, type=str, required=False, metavar="file.txt",
+                        help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
+    parser.add_argument("-i", nargs=1, type=int, required=False,
+                        metavar="Iterations", help="Le nombre d'itérations pour le flocon")
+    parser.add_argument("-p", nargs=1, type=str, required=False, default=[
+                        "images"], metavar="photos/", help="Le chemin où vous voulez que les photos soient stockées")
+    parser.add_argument("-t", nargs=1, type=int, required=False,
+                        metavar="taille", help="La taille des hexagones")
+    parser.add_argument("--rate", nargs=1, type=int, required=False, default=[
+                        25], metavar="framerate", help="Tout les combien de framerates vous voulez sauvegarder une image")
+    parser.add_argument("--width", nargs=1, type=int, required=False,
+                        help="La largeur de l'image, va avec l'option -h")
+    parser.add_argument("--height", nargs=1, type=int, required=False,
+                        help="La hauteur de l'image, va avec l'option -w")
+    parser.add_argument("--test", action="store_true", required=False,
+                        help="Lance une vérification du programme, tout les autres paramètres sont ignorés")
     arguments = parser.parse_args()
 
     if arguments.test:
@@ -34,7 +42,8 @@ if __name__ == "__main__":
             try:
                 load_constants(arguments.c[0])
             except:
-                print("Erreur lors de la lecture du fichier, les variables par défaut seront prises")
+                print(
+                    "Erreur lors de la lecture du fichier, les variables par défaut seront prises")
 
         if arguments.i:
             constantes.ITERATIONS = abs(arguments.i[0])
@@ -44,12 +53,14 @@ if __name__ == "__main__":
 
         if arguments.width:
             constantes.W = abs(arguments.width[0])
-            constantes.W_TABLEAU = int(constantes.W / (2 * constantes.T_HEXAGONES)) + 2
+            constantes.W_TABLEAU = int(
+                constantes.W / (2 * constantes.T_HEXAGONES)) + 2
             constantes.W_TABLEAU += constantes.W_TABLEAU % 2
 
         if arguments.height:
             constantes.H = abs(arguments.height[0])
-            constantes.H_TABLEAU = int(constantes.H / (constantes.T_HEXAGONES * (1 + sin(pi / 3)))) + 2
+            constantes.H_TABLEAU = int(
+                constantes.H / (constantes.T_HEXAGONES * (1 + sin(pi / 3)))) + 2
             constantes.H_TABLEAU += constantes.H_TABLEAU % 2
     chemin_image = arguments.p[0]
     rate = abs(arguments.rate[0])

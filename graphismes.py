@@ -80,7 +80,6 @@ def generer_unitee_hexagonal(width, height, cristal):
     # ⬡   ⬡
     # Etc...
 
-
     # Moitié de la taille de l'hexagone (SOHCAHTOA)
     l = sin(pi / 3)
     colonne = 0
@@ -92,8 +91,8 @@ def generer_unitee_hexagonal(width, height, cristal):
 
             color = (0, 0, 0)
             if (colonne, ligne) in cristal:
-                dx = abs(constantes.W_TABLEAU - colonne) % 256
-                dy = abs(constantes.H_TABLEAU - ligne) % 256
+                dx = 255 - 2*(abs((constantes.W_TABLEAU // 2) - colonne) % 128)
+                dy = 255 - 2*(abs((constantes.H_TABLEAU // 2) - ligne) % 128)
                 color = (dx, dy, (dx + dy) // 2)
 
             ligne += 2
