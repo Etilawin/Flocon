@@ -235,6 +235,10 @@ def create_folder(chemin):
         makedirs(chemin)
     except FileExistsError:
         pass  # Le dossier existe déjà pas besoin de le recréer
+    except:
+        print("Erreur inconnue le chemin pris sera donc celui par défaut")
+        create_folder("images")
+
     base = join(chemin, "images_")
     i = 0
     while exists(base + str(i)):

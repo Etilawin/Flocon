@@ -17,53 +17,56 @@ if __name__ == "__main__":
 
     parser = ArgumentParser(
         description="Parser comprenant tout les paramètres possibles et imaginables")
-    parser.add_argument("-c", nargs=1, type=str, required=False, metavar="file.txt",
+    parser.add_argument("-c", nargs=1, type=str,
+                        required=False, default=None, metavar="file.txt",
                         help="Les fichier contenant les constantes, une ligne devrait être sauté entre chaque constante et de la forme KAPPA=1.2, les constantes manquantes seront mises par défaut")
-    parser.add_argument("-i", nargs=1, type=int, required=False,
-                        metavar="Iterations", help="Le nombre d'itérations pour le flocon")
-    parser.add_argument("-p", nargs=1, type=str, required=False, default=[
-                        "images"], metavar="photos/", help="Le chemin où vous voulez que les photos soient stockées")
-    parser.add_argument("-t", nargs=1, type=int, required=False,
-                        metavar="taille", help="La taille des hexagones")
-    parser.add_argument("--rate", nargs=1, type=int, required=False, default=[
-                        25], metavar="framerate", help="Tout les combien de framerates vous voulez sauvegarder une image")
-    parser.add_argument("--width", nargs=1, type=int, required=False,
-                        help="La largeur de l'image, va avec l'option -h")
-    parser.add_argument("--height", nargs=1, type=int, required=False,
-                        help="La hauteur de l'image, va avec l'option -w")
+    parser.add_argument("-i", nargs=1, type=int,
+                        required=False, default=5000, metavar="Iterations",
+                        help="Le nombre d'itérations pour le flocon")
+    parser.add_argument("-p", nargs=1, type=str,
+                        required=False, default="images", metavar="photos",
+                        help="Le chemin où vous voulez que les photos soient stockées")
+    parser.add_argument("-t", nargs=1, type=int,
+                        required=False, default=5, metavar="taille",
+                        help="La taille des hexagones")
+    parser.add_argument("--rate", nargs=1, type=int,
+                        required=False, default=25, metavar="framerate",
+                        help="Tout les combien de framerates vous voulez sauvegarder une image")
+    parser.add_argument("--width", nargs=1, type=int,
+                        required=False, default=2000, metavar="W",
+                        help="La largeur de l'image, va avec l'option --height")
+    parser.add_argument("--height", nargs=1, type=int,
+                        required=False, default=2000, metavar="H",
+                        help="La hauteur de l'image, va avec l'option --width")
     parser.add_argument("--test", action="store_true", required=False,
                         help="Lance une vérification du programme, tout les autres paramètres sont ignorés")
-    arguments = parser.parse_args()
+    arguments = vars(parser.parse_args())
 
-    if arguments.test:
+    if arguments['test']:
         constantes.ITERATIONS = 26
     else:
-        if arguments.c:
+        if arguments['c']:
             try:
-                load_constants(arguments.c[0])
+                load_constants(arguments['c'])
             except:
                 print(
                     "Erreur lors de la lecture du fichier, les variables par défaut seront prises")
 
-        if arguments.i:
-            constantes.ITERATIONS = abs(arguments.i[0])
+        constantes.ITERATIONS = abs(arguments['i'])
 
-        if arguments.t:
-            constantes.T_HEXAGONES = abs(arguments.t[0])
+        constantes.T_HEXAGONES = abs(arguments['t'])
 
-        if arguments.width:
-            constantes.W = abs(arguments.width[0])
-            constantes.W_TABLEAU = int(
-                constantes.W / (2 * constantes.T_HEXAGONES)) + 2
+        if arguments['width'] != 2000:
+            constantes.W = abs(arguments['width'])
+            constantes.W_TABLEAU = int( ( int(constantes.W / constantes.T_HEXAGONES) + 2 ) / ( 2 * sin(pi / 3) ) + 1)
             constantes.W_TABLEAU += constantes.W_TABLEAU % 2
 
-        if arguments.height:
-            constantes.H = abs(arguments.height[0])
-            constantes.H_TABLEAU = int(
-                constantes.H / (constantes.T_HEXAGONES * (1 + sin(pi / 3)))) + 2
+        if arguments['height']:
+            constantes.H = abs(arguments['height'])
+            constantes.H_TABLEAU = int( (2/3) * int(constantes.H / constantes.T_HEXAGONES) + 2)
             constantes.H_TABLEAU += constantes.H_TABLEAU % 2
-    chemin_image = arguments.p[0]
-    rate = abs(arguments.rate[0])
+    chemin_image = arguments['p']
+    rate = abs(arguments['rate'])
 
     # https://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser.add_argument
     tableau_cellules = []
@@ -119,6 +122,6 @@ if __name__ == "__main__":
             rmtree(chemin, ignore_errors=True)
         raise KeyboardInterrupt
 
-    if arguments.test:
+    if arguments['test']:
         rmtree(chemin, ignore_errors=True)
         print("Tout s'est déroulé correctement, le programme marche")
